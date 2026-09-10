@@ -71,6 +71,26 @@ export default function GraphMap({
 
   const highlightedEdgeIds = new Set(activeRoute?.edges || []);
 
+  // Calculate bounding box for SVG viewBox to automatically center map coordinates
+  let minX = 0, maxX = 1000, minY = 0, maxY = 800;
+  if (nodes.length > 0) {
+    minX = Math.min(...nodes.map((n) => n.x));
+    maxX = Math.max(...nodes.map((n) => n.x));
+    minY = Math.min(...nodes.map((n) => n.y));
+    maxY = Math.max(...nodes.map((n) => n.y));
+    // Include facilities in bounding box if available
+    Object.values(facilities).flat().forEach((f) => {
+      if (f && typeof f.x === 'number') {
+        minX = Math.min(minX, f.x);
+        maxX = Math.max(maxX, f.x);
+        minY = Math.min(minY, f.y);
+        maxY = Math.max(maxY, f.y);
+      }
+    });
+  }
+  const padding = 80;
+  const viewBoxStr = `${minX - padding} ${minY - padding} ${Math.max(200, maxX - minX + padding * 2)} ${Math.max(200, maxY - minY + padding * 2)}`;
+
   return (
     <div
       className="map-canvas interactive-map"
@@ -83,9 +103,10 @@ export default function GraphMap({
     >
       <svg
         className="map-svg-viewport"
+        viewBox={viewBoxStr}
         style={{
           transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.zoom})`,
-          transformOrigin: '0 0',
+          transformOrigin: 'center center',
         }}
       >
         <defs>
@@ -107,27 +128,32 @@ export default function GraphMap({
           edges.map((e) => {
             const fromNode = nodeMap.get(e.from);
             const toNode = nodeMap.get(e.to);
-            if (!fromNode || !toNode) return null;
+            const x1 = e.x1 !== undefined ? e.x1 : fromNode?.x;
+            const y1 = e.y1 !== undefined ? e.y1 : fromNode?.y;
+            const x2 = e.x2 !== undefined ? e.x2 : toNode?.x;
+            const y2 = e.y2 !== undefined ? e.y2 : toNode?.y;
+
+            if (x1 === undefined || y1 === undefined || x2 === undefined || y2 === undefined) return null;
 
             const isHighlighted = highlightedEdgeIds.has(e.id) ||
               (highlightedNodeIds.has(e.from) && highlightedNodeIds.has(e.to));
 
-            const midX = (fromNode.x + toNode.x) / 2;
-            const midY = (fromNode.y + toNode.y) / 2;
+            const midX = (x1 + x2) / 2;
+            const midY = (y1 + y2) / 2;
 
             return (
               <g key={`edge-${e.id}`}>
                 <line
-                  x1={fromNode.x}
-                  y1={fromNode.y}
-                  x2={toNode.x}
-                  y2={toNode.y}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
                   className={`edge-line ${isHighlighted ? 'edge-corridor' : ''}`}
-                  strokeWidth={isHighlighted ? 5 : 2}
+                  strokeWidth={isHighlighted ? 6 : 2}
                 />
                 {showEdgeIds && (
                   <text x={midX} y={midY - 4} className="edge-id-label">
-                    E{e.id} ({e.cost}m)
+                    E{e.id} {e.cost ? `(${e.cost}m)` : ''}
                   </text>
                 )}
               </g>

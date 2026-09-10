@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "backend:build": "cmake -B model/backend/build -S model/backend && cmake --build model/backend/build",
+    "backend": "cd model/backend && ./build/main",
+    "start:backend": "cd model/backend && ./build/main"
   },
   "keywords": [],
   "author": "",
