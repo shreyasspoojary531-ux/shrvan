@@ -1,28 +1,46 @@
-/**
- * Central request gateway. Domain modules deliberately contain no guessed routes.
- * Add verified Crow paths there once the backend source is available.
- */
-import { runCancellableRequest } from '../utils/requestManager';
+const API_BASE = '/api';
 
-export class BackendContractPendingError extends Error {
-  constructor(domain) {
-    super(`${domain} API contract has not been verified against the Crow backend.`);
-    this.name = 'BackendContractPendingError';
+export async function request(endpoint, options = {}) {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      let msg = `Server returned status ${response.status}`;
+      try {
+        const errJson = JSON.parse(text);
+        if (errJson.message) msg = errJson.message;
+      } catch {
+        if (text) msg = text;
+      }
+      throw new Error(msg);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    }
+    const text = await response.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { success: true, text };
+    }
+  } catch (err) {
+    console.warn(`[GCCS API] Request failed for ${endpoint}:`, err.message);
+    throw err;
   }
 }
 
-export async function request(path, options = {}, requestKey = path) {
-  return runCancellableRequest(requestKey, async (signal) => {
-    const response = await fetch(path, {
-      ...options,
-      headers: { Accept: 'application/json', ...options.headers },
-      signal,
-    });
-    if (!response.ok) throw new Error(`Request failed (${response.status}).`);
-    return response.status === 204 ? null : response.json();
-  });
+export async function getSystemStatus() {
+  return request('/status');
 }
 
-export function contractPending(domain) {
-  return Promise.reject(new BackendContractPendingError(domain));
-}

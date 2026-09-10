@@ -45,3 +45,86 @@ body { background: #e9eae7; padding: 0; }
 .modal-backdrop { background: rgba(40, 43, 43, .32); }.modal { background: #fff; border: 0; border-radius: 27px; box-shadow: 0 20px 55px rgba(46, 49, 50, .2); }.modal-head { padding: 22px; }.modal > .pending { margin-left: 22px; }.modal form { border-top-color: #efefed; padding: 19px 22px 22px; }.modal label { color: #51595c; }.modal input, .modal textarea, .modal select { background: #f8f8f7; border: 1px solid #e6e7e4; color: #8a9294; border-radius: 10px; }.location-box { color: #707a7c; border-color: #d5ddd7; background: #f7faf7; border-radius: 10px; }.location-box svg { color: #078d58; }
 @media (max-width: 1050px) { body { padding: 18px; }.sidebar { width: 84px; flex-basis: 84px; padding: 20px 13px; }.workspace { padding: 20px 20px 20px 0; }.sidebar nav { margin-top: 80px; } }
 @media (max-width: 760px) { body { padding: 0; }.app-shell { border-radius: 0; min-height: 100dvh; }.sidebar { width: 116px; background: #f3f3f1; padding: 26px 18px; }.workspace { padding: 14px; }.mobile-menu { background: #f3f5f3; color: #465052; border: 0; border-radius: 50%; }.topbar { min-height: 66px; padding: 0 16px; border-radius: 33px; }.topbar h1 { font-size: 18px; }.status-strip { border-radius: 18px; }.panel { border-radius: 21px; }.map-footer { background: #fff; }.pending { max-width: 160px; }.modal { border-radius: 21px; } }
+
+/* SVG Graph & Emergency Corridor Styles */
+.map-svg-viewport { width: 100%; height: 100%; pointer-events: auto; }
+.edge-line { stroke: #94a3b8; stroke-opacity: 0.6; stroke-dasharray: none; transition: stroke 0.3s, stroke-width 0.3s; }
+.edge-line.edge-corridor { stroke: #10b981; stroke-opacity: 1; stroke-width: 6px; filter: url(#corridorGlow); stroke-linecap: round; }
+.edge-id-label { font-size: 9px; fill: #64748b; font-family: "Fira Code", monospace; text-anchor: middle; pointer-events: none; }
+
+.node-circle { fill: #475569; stroke: #ffffff; stroke-width: 2px; transition: r 0.2s, fill 0.2s; }
+.node-circle.is-selected { fill: #3b82f6; stroke: #ffffff; stroke-width: 3px; }
+.node-circle.is-corridor { fill: #10b981; stroke: #ffffff; stroke-width: 2px; }
+.node-circle.is-emergency { fill: #ef4444; stroke: #ffffff; stroke-width: 3px; }
+.node-id-label { font-size: 10px; fill: #1e293b; font-weight: 700; font-family: "Fira Code", monospace; text-anchor: middle; pointer-events: none; }
+
+.corridor-pulse-ring { animation: pulseRing 1.8s infinite ease-out; }
+@keyframes pulseRing { 0% { r: 8px; opacity: 0.9; } 100% { r: 24px; opacity: 0; } }
+
+.facility-map-label { font-size: 9px; fill: #1e293b; font-weight: 600; font-family: "Fira Code", monospace; }
+
+.emergency-point-beacon .beacon-ping { animation: pingBeacon 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+@keyframes pingBeacon { 75%, 100% { transform: scale(1.6); opacity: 0; } }
+
+.map-tooltip { position: absolute; background: #0f172a; color: #f8fafc; padding: 6px 10px; border-radius: 6px; font-size: 11px; z-index: 10; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+/* Disaster Alert Banners & Active Cards */
+.disaster-banner { background: #ef4444; color: #ffffff; padding: 14px 18px; border-radius: 12px; margin-bottom: 16px; display: flex; gap: 12px; align-items: center; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3); }
+.disaster-banner p { margin: 4px 0 0; font-size: 13px; opacity: 0.95; }
+.corridor-banner { background: #10b981; color: #ffffff; padding: 14px 18px; border-radius: 12px; margin-bottom: 16px; display: flex; gap: 12px; align-items: center; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3); }
+.corridor-banner p { margin: 4px 0 0; font-size: 13px; opacity: 0.95; }
+
+.active-corridor-card { padding: 16px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; margin: 0 16px; }
+.badge-active { background: #10b981; color: #ffffff; font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 4px; font-family: "Fira Code", monospace; }
+.corridor-stats { display: flex; gap: 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #cbd5e1; }
+.corridor-stats div { font-size: 11px; }
+.corridor-stats small { display: block; color: #64748b; }
+.corridor-stats strong { color: #0f172a; }
+
+/* Public Mobile Interface Styling */
+.mobile-shell { max-width: 480px; margin: 20px auto; min-height: 85vh; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.12); overflow: hidden; display: flex; flex-direction: column; }
+.mobile-header { background: #0f172a; color: #ffffff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+.mobile-header-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+.ws-badge { font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; font-family: "Fira Code", monospace; }
+.ws-badge.connected { background: #10b981; color: #ffffff; }
+.ws-badge.connecting { background: #f59e0b; color: #ffffff; }
+.ws-badge.disconnected, .ws-badge.offline { background: #ef4444; color: #ffffff; }
+
+.mobile-content { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.mobile-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.mobile-card h2 { font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.mobile-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.full-width { width: 100%; }
+
+.route-card { border-color: #10b981; background: #f0fdf4; }
+.route-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.route-success-tag { color: #047857; font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 4px; font-family: "Fira Code", monospace; }
+.route-path-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px 0; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; margin-bottom: 12px; }
+.route-path-summary small { display: block; color: #64748b; font-size: 10px; }
+.route-path-summary strong { font-size: 12px; color: #0f172a; }
+.node-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.node-chip { background: #10b981; color: #ffffff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; font-family: "Fira Code", monospace; }
+
+.logs-card h3 { font-size: 13px; margin-bottom: 8px; color: #475569; }
+.logs-box { background: #0f172a; color: #38bdf8; font-family: "Fira Code", monospace; font-size: 10px; padding: 10px; border-radius: 8px; max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.log-line { border-bottom: 1px solid #1e293b; padding-bottom: 2px; }
+
+/* API Docs Styling */
+.api-docs-container { padding: 10px 0; }
+.docs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.backend-badge { background: #0f172a; color: #38bdf8; padding: 8px 14px; border-radius: 20px; font-family: "Fira Code", monospace; font-size: 12px; display: flex; align-items: center; gap: 8px; }
+.docs-section h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.endpoints-list { display: grid; gap: 16px; }
+.endpoint-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+.endpoint-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.method-badge { font-family: "Fira Code", monospace; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; color: #fff; }
+.method-badge.get { background: #3b82f6; }
+.method-badge.post { background: #10b981; }
+.method-badge.delete { background: #ef4444; }
+.method-badge.ws { background: #8b5cf6; }
+.endpoint-path { font-family: "Fira Code", monospace; font-weight: 700; font-size: 14px; color: #0f172a; }
+.endpoint-desc { color: #475569; font-size: 13px; margin: 4px 0 12px; }
+.code-block { margin-top: 8px; }
+.code-block small { display: block; font-family: "Fira Code", monospace; font-size: 9px; color: #64748b; margin-bottom: 4px; }
+.code-block pre { background: #0f172a; color: #f1f5f9; padding: 10px; border-radius: 8px; font-family: "Fira Code", monospace; font-size: 11px; margin: 0; overflow-x: auto; }
+
